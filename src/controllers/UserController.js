@@ -91,5 +91,32 @@ try{
 }
 
 
+//===================================loginUser==============================================================//
+
+
+
+const loginUser=async function(req,res){
+  try{
+
+  let { email,password}= req.body
+  let user= await userModel.findOne({ email ,password});
+ if (user) {
+      let payload = { userId: user._id,   email:   email };
+      const generatedToken = jwt.sign(payload, "bloggingproject1");
+      return res.status(200).send({
+        status: true,
+        token: generatedToken,
+      });
+    } else {
+      return res.status(400).send({ status: false, message: "Invalid credentials" });
+    }
+  } 
+  catch(error){
+      res.status(500).send({status : false , msg : error.message})
+
+  }
+  }
+
 
 module.exports.createUser=createUser
+module.exports.loginUser=loginUser
