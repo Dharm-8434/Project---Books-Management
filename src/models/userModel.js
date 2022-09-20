@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         enum: ["Mr", "Mrs", "Miss"]
     },
-     name :{
+     name :{        
         type:String,
         require:true,
         unique:true
@@ -36,4 +36,4 @@ const UserSchema = new mongoose.Schema({
 
 }, { timestamps: true});
 
-module.exports = mongoose.model('userData', UserSchema)
+module.exports = mongoose.model('user', UserSchema)
