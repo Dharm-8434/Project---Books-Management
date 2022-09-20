@@ -7,9 +7,9 @@ router.get('hello', function(req,res){
     res.send("my first api")
 })
 
-// router.all("/*", function (req, res) {
-//     res.status(400).send({ status: false, message: "Invalid path params" });
-//   });
+router.all("/*", function (req, res) {
+    res.status(400).send({ status: false, message: "Invalid path params" });
+  });
 
 
 module.exports = router;
