@@ -10,7 +10,14 @@ router.post("/register",UserControllers.createUser)
 
 //---------------------------Post(loginUser)----------------------------------//
 router.post("/login",UserControllers.loginUser)
+
+//---------------------------Post(createBook)----------------------------------//
 router.post("/books",BookControllers.createBook)
+
+//---------------------------get(getBook)--------------------------------------//
+router.get("/books",BookControllers.getUser)
+
+
 //--------------------------get by Id----------------------------------------//
 //router.post("/books/bookId",BookControllers.getBookById)
 //----------------------------THIS is wrong route handler---------------------//

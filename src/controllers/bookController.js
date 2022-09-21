@@ -61,6 +61,24 @@ if(releasedAt.length==0)return res.status(400).send({ status: false, msg: "relea
 
 
 
+
+///getblogs
+
+const getUser = async function (req, res) {
+  try {
+    let data = req.body
+    req.query.isDeleted = false
+    let collectionofBook = await bookModel.find(req.query)
+    if (collectionofBook.length < 1) {
+      return res.status(404).send({status: false,msg: "not user found"})
+    }
+    return res.status(200).send({status: true,massage:'Book list',data: collectionofBook})
+  } catch (error) {return res.status(500).send({status: false,msg: error})
+  }
+}
+
+
+
 // const getBookById = async function(req,res){
 //     try{
 //          const data= req.param;
@@ -72,4 +90,6 @@ if(releasedAt.length==0)return res.status(400).send({ status: false, msg: "relea
 // }
 
 module.exports.createBook=createBook
+
+module.exports.getUser=getUser
 //module.exports.getBookById = getBookById
