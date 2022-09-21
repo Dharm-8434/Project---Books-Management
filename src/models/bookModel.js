@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 const userModel = require('./userModel');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const BookSchema = new mongoose.Schema({
     title: {
-        type: string,
+        type: String,
         require: true,
         unique: true,
         trim:true
     },
     excerpt: {
-        type: string,
+        type: String,
         require: true,
         trim:true
     },
@@ -20,13 +21,13 @@ const BookSchema = new mongoose.Schema({
     },//, refs to user model
 
     ISBN: {
-        type: string,
+        type: String,
         require: true,
         unique: true,
         trim:true
     },
     category: {
-        type: string,
+        type: String,
         require: true
     },
     subcategory: {
@@ -39,7 +40,7 @@ const BookSchema = new mongoose.Schema({
     },
     deletedAt: Date,
     isDeleted: {
-        type: boolean,
+       type:Boolean,
         default: false
     },
     releasedAt: Date
