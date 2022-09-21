@@ -96,9 +96,18 @@ const loginUser = async function (req, res) {
         .send({
           status: true, token: generatedToken,
         });
-    } else {
+     }
+    // else {
+    //   return res.status(400)
+    //     .send({ status: false, message: "Invalid credentials" });
+    // }
+    if (!email) {
       return res.status(400)
-        .send({ status: false, message: "Invalid credentials" });
+        .send({ status: false, message: "email is required" })
+    }
+    if(!password){
+      return res.status(400)
+      .send({ status:false,message:"Password is required" })
     }
   }
   catch (error) {
