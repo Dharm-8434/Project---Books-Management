@@ -31,7 +31,7 @@ const BookSchema = new mongoose.Schema({
         require: true
     },
     subcategory: [{
-        type: Array,
+        type: String,
         require: true,
         trim: true
     }],
@@ -44,7 +44,7 @@ const BookSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    releasedAt: { type: Date, require: true },
+    //releasedAt:  {type:Date, required: true }
 },
     { timestamps: true });
 

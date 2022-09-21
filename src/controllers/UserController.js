@@ -87,22 +87,15 @@ const createUser = async function (req, res) {
 const loginUser = async function (req, res) {
   try {
 
-    let { email, password } = req.body
-     
-    if (Object.keys(data).length == 0) {
-      return res.status(400)
-      .send({ status: false, message: "please enter data in the request body" })
-    }
-
+    let { email, password } = req.body;
     let user = await userModel.findOne({ email, password });
+
     if (user) {
       let payload = { userId: user._id, email: email };
-      const generatedToken = jwt.sign(payload, "bloggingproject1");
-      return res.status(200)
-        .send({
-          status: true, token: generatedToken,
-        });
-     }
+      const generatedToken = jwt.sign(payload, "BookManagement");
+      return res.status(200).send({status: true,token: generatedToken});
+    } 
+
     if (!email) {
       return res.status(400)
         .send({ status: false, message: "email is required" })
@@ -111,13 +104,10 @@ const loginUser = async function (req, res) {
       return res.status(400)
       .send({ status:false,message:"Password is required" })
     }
+  } catch (error) {
+    res.status(500).send({ status: false, msg: error.message });
   }
-  catch (error) {
-    res.status(500).send({ status: false, msg: error.message })
-
-  }
-}
-
+};
 
 module.exports.createUser = createUser
 module.exports.loginUser = loginUser
