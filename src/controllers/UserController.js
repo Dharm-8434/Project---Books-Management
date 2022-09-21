@@ -88,6 +88,12 @@ const loginUser = async function (req, res) {
   try {
 
     let { email, password } = req.body
+     
+    if (Object.keys(data).length == 0) {
+      return res.status(400)
+      .send({ status: false, message: "please enter data in the request body" })
+    }
+
     let user = await userModel.findOne({ email, password });
     if (user) {
       let payload = { userId: user._id, email: email };
@@ -97,10 +103,6 @@ const loginUser = async function (req, res) {
           status: true, token: generatedToken,
         });
      }
-    // else {
-    //   return res.status(400)
-    //     .send({ status: false, message: "Invalid credentials" });
-    // }
     if (!email) {
       return res.status(400)
         .send({ status: false, message: "email is required" })

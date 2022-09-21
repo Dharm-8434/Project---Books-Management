@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const userModel = require('./userModel');
 
 const BookSchema = new mongoose.Schema({
     title: {
@@ -15,6 +16,7 @@ const BookSchema = new mongoose.Schema({
     userId: {
         type: ObjectId,
         require: true,
+        ref:'userdata'
     },//, refs to user model
 
     ISBN: {
@@ -45,7 +47,7 @@ const BookSchema = new mongoose.Schema({
     { timestamps: true });
 
 
-module.exports = mongoose.model('Book', BookSchema)
+module.exports = mongoose.model('book', BookSchema)
 
 
 
