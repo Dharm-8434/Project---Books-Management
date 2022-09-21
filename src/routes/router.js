@@ -10,9 +10,9 @@ router.post("/register",UserControllers.createUser)
 
 //---------------------------Post(loginUser)----------------------------------//
 router.post("/login",UserControllers.loginUser)
-//router.post("/books",BookControllers.createBook)
+router.post("/books",BookControllers.createBook)
 //--------------------------get by Id----------------------------------------//
-router.post("/books/:bookId",BookControllers.getBookById)
+//router.post("/books/bookId",BookControllers.getBookById)
 //----------------------------THIS is wrong route handler---------------------//
 router.all("/*", function (req, res) {
     res.status(400).send({ status: false, message: "Invalid path params" });
