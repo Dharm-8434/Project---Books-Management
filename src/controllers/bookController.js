@@ -46,6 +46,9 @@ const createBook = async function (req, res) {
 
       data.ISBN = ISBN.trim()
       if (ISBN.length == 0) return res.status(400).send({ status: false, msg: "ISBN is empty" });
+      if(!(/^[0-9]{13}$/).test(data.ISBN)){
+        return res.status(400).send({status:false,msg:"ISBN  is invalid must be of 13 digits"})
+    }
       //if (!.test(ISBN)) return res.status(400).send({ status: false, message: "ISBN is not valid " })
       let ISBNCheck = await bookModel.findOne({ ISBN: ISBN });
       if (ISBNCheck) return res.status(400).send({ status: false, msg: "This ISBN Number is already used" })
