@@ -15,7 +15,7 @@ const authentication = async function (req, res, next) {
       return res.status(401).send({ status: false, msg: "-----Token Must be Filled---->" });
     
     // verify token :
-    let decodedToken = jwt.verify(token, "project3");
+    let decodedToken = jwt.verify(token, "Project3");
     if (!decodedToken)
       return res.status(400).send({status: false,msg: "Token Not Verified Please Enter Valid Token"});
 

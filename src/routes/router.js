@@ -1,6 +1,7 @@
 const express = require('express');
  const UserControllers = require('../controllers/UserController')
  const BookControllers = require('../controllers/bookController')
+ const MiddleWare = require('../middleware/auth');
 const router = express.Router();
 
 
@@ -12,10 +13,10 @@ router.post("/register",UserControllers.createUser)
 router.post("/login",UserControllers.loginUser)
 
 //---------------------------Post(createBook)----------------------------------//
-router.post("/books",BookControllers.createBook)
+router.post("/books",MiddleWare.authentication,BookControllers.createBook)
 
 //---------------------------get(getBook)--------------------------------------//
-router.get("/books",BookControllers.getUser)
+//router.get("/books",MiddleWare.authentication,BookControllers.getUser)
 
 
 //--------------------------get by Id----------------------------------------//

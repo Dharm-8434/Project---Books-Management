@@ -1,8 +1,35 @@
 const userModel = require("../models/userModel")
+const express=require('express')
 const jwt = require("jsonwebtoken");
 const bookModel = require("../models/bookModel")
+//const mongoose = require("mongoose")
 
 
+
+// const isValiduserId = (userId) => {
+//   return mongoose.Types.userId.isValid(userId)
+// }
+// const stringChecking = function (data) {
+//   if (typeof data !== 'string') {
+//       return false;
+//   } else if (typeof data === 'string' && data.trim().length == 0) {
+//       return false;
+//   } else {
+//       return true;
+//   }
+// }
+
+// const arrayOfStringChecking = function (data) {
+//   for (let i = 0; i < data.length; i++) {
+//       if (typeof data[i] !== 'string') {
+//           return false;
+//       } else if (typeof data[i] === 'string' && data[i].trim().length == 0) {
+//           return false;
+//       } else {
+//           return true;
+//       }
+//   }
+// }
 
 
 
@@ -85,19 +112,72 @@ const createBook = async function (req, res) {
 
 ///getblogs
 
-const getUser = async function (req, res) {
-    try {
-      let data = req.body
-      req.query.isDeleted = false
-      let collectionofBook = await bookModel.find(req.query)
-      if (collectionofBook.length < 1) {
-        return res.status(404).send({ status: false, msg: "not user found" })
-      }
-      return res.status(200).send({ status: true, massage: 'Book list', data: collectionofBook })
-    } catch (error) {
-      return res.status(500).send({ status: false, msg: error })
-    }
-  }
+//const getUser = async function (req, res) {
+    // try {
+    //   let data = req.body.query
+    //   if(data.length==0){
+    //     return res.status(400).send({status:false,msg:"please provide inputs"})
+    //   }
+    //   req.query.isDeleted = false
+    //   let collectionofBook = await bookModel.find(req.query)
+    //   if (collectionofBook.length < 1) {
+    //     return res.status(404).send({ status: false, msg: "not user found" })
+    //   }
+    //   return res.status(200).send({ status: true, massage: 'Book list', data: collectionofBook })
+    // } catch (error) {
+    //   return res.status(500).send({ status: false, msg: error })
+    // }
+
+  //   try {
+  //     let bodyData = req.query
+
+  //     if (Object.keys(bodyData).length == 0) {
+  //         let getData = await bookModel.find({ isDeleted: false, isPublished: true })
+  //         if (getData.length <= 0) {
+  //             return res.status(200).send({ status: true, count: getData.length, data: getData })
+  //         }
+  //     }
+  //     else {
+  //         let { subcategory, category,  userId } = bodyData
+  //         let filter = {}
+  //         if (subcategory) {
+  //             if (!arrayOfStringChecking(subcategory)) {
+  //                 return res.status(404).send({ status: false, msg: "subcategory must be present and have Non empty string " })
+  //             }
+  //             filter.subcategory = subcategory
+  //         }
+          
+  //         if (category) {
+  //             if (!stringChecking(category)) {
+  //                 return res.status(404).send({ status: false, msg: "tags must be present and have Non empty string " })
+  //             }
+  //             filter.category = category
+        
+  //         //let USERid = await bookModel.find(userId)
+  //         // if (userId) {
+  //         //     if(userId !=USERid ){
+  //         //      return res.status(400).send({status:false,msg:"userid must be persent"})
+  //         //     }
+  //         //     filter.userId = userId
+  //         // }
+  //         filter.isDeleted = false
+  //         filter.isPublished = true
+  //         if (subcategory || category ||  userId ) {
+  //             let getDataByFilter = await bookModel.find(filter)
+  //             return res.status(200).send({ status: true, count: getDataByFilter.length, data: getDataByFilter })
+  //         }
+  //         else {
+  //             return res.status(400).send({ status: false, msg: "Filters can be subcategory,category,tags,authorId, title or body only " })
+  //         }
+
+  //       }
+  //     }
+  //   }
+  // catch (err) {
+  //     res.status(500).send({ status: false, error: err.message })
+  // }
+    
+  //     }
 
 
 
@@ -113,5 +193,5 @@ const getUser = async function (req, res) {
 
   module.exports.createBook = createBook
 
-  module.exports.getUser = getUser
+  //module.exports.getUser = getUser
 //module.exports.getBookById = getBookById
