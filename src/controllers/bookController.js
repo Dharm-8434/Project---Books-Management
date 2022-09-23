@@ -2,35 +2,6 @@ const userModel = require("../models/userModel")
 const express=require('express')
 const jwt = require("jsonwebtoken");
 const bookModel = require("../models/bookModel")
-//const mongoose = require("mongoose")
-
-
-
-// const isValiduserId = (userId) => {
-//   return mongoose.Types.userId.isValid(userId)
-// }
-// const stringChecking = function (data) {
-//   if (typeof data !== 'string') {
-//       return false;
-//   } else if (typeof data === 'string' && data.trim().length == 0) {
-//       return false;
-//   } else {
-//       return true;
-//   }
-// }
-
-// const arrayOfStringChecking = function (data) {
-//   for (let i = 0; i < data.length; i++) {
-//       if (typeof data[i] !== 'string') {
-//           return false;
-//       } else if (typeof data[i] === 'string' && data[i].trim().length == 0) {
-//           return false;
-//       } else {
-//           return true;
-//       }
-//   }
-// }
-
 
 
 const createBook = async function (req, res) {
@@ -100,98 +71,66 @@ const createBook = async function (req, res) {
       //Create bookData
 
       let saveData = await bookModel.create(data)
-      res.status(201).send({ status: true,msg:'Sucess', data: data })
+      res.status(201).send({ status: true,msg:'Sucess', data: saveData })
 
   } catch (error) {
       res.status(500).send({ status: false, msg: error.message })
 
   }
 }
+ //-----------------------getBook---------------------//
+ const getBook = async function(req,res){
+try{
+let data = req.query;
+
+if(Object.keys(data).length==0){
+  return res.status(400).send({status:false,msg:"Apply filter"})
+}
+let {userId,category,subcategory}=data
+let filter = {};
+if(data.subcategory){
+filter.subcategory = data.subcategory;
+}
+if(data.category){
+filter.category = data.category;
+}
+if(data.userId){
+filter.userId = data.userId;
+}
+
+if (subcategory || category ||  userId ) {
+  let getData = await bookModel.find(filter)
+  
+  return res.status(200).send({ status: true,data: getData })
+
+ }
+
+}
+catch(err){
+return res.status(500).send({status:false,msg:err})
+}
+
+ }
 
 
+ //--------------------DeleteBook---------------//
 
-///getblogs
+ const deleteBook = async function (req, res) {
 
-//const getUser = async function (req, res) {
-    // try {
-    //   let data = req.body.query
-    //   if(data.length==0){
-    //     return res.status(400).send({status:false,msg:"please provide inputs"})
-    //   }
-    //   req.query.isDeleted = false
-    //   let collectionofBook = await bookModel.find(req.query)
-    //   if (collectionofBook.length < 1) {
-    //     return res.status(404).send({ status: false, msg: "not user found" })
-    //   }
-    //   return res.status(200).send({ status: true, massage: 'Book list', data: collectionofBook })
-    // } catch (error) {
-    //   return res.status(500).send({ status: false, msg: error })
-    // }
+  // let data=req.body
 
-  //   try {
-  //     let bodyData = req.query
+  try {
+    let myData = await bookModel.findOneAndUpdate({ _id: req.params.bookId },{ isDeleted: true, deletedAt: Date() },{ new: true });
+    return res.status(200).send({status:true,msg:myData});
+  if(!myData){
+    return res.send(400).send({status:true,msg:"nahi huaa bhai"})
+  }
+  } catch (error) {
+    return res.status(500).send({ status: false, msg: error.message, });
+  }
+}
 
-  //     if (Object.keys(bodyData).length == 0) {
-  //         let getData = await bookModel.find({ isDeleted: false, isPublished: true })
-  //         if (getData.length <= 0) {
-  //             return res.status(200).send({ status: true, count: getData.length, data: getData })
-  //         }
-  //     }
-  //     else {
-  //         let { subcategory, category,  userId } = bodyData
-  //         let filter = {}
-  //         if (subcategory) {
-  //             if (!arrayOfStringChecking(subcategory)) {
-  //                 return res.status(404).send({ status: false, msg: "subcategory must be present and have Non empty string " })
-  //             }
-  //             filter.subcategory = subcategory
-  //         }
-          
-  //         if (category) {
-  //             if (!stringChecking(category)) {
-  //                 return res.status(404).send({ status: false, msg: "tags must be present and have Non empty string " })
-  //             }
-  //             filter.category = category
-        
-  //         //let USERid = await bookModel.find(userId)
-  //         // if (userId) {
-  //         //     if(userId !=USERid ){
-  //         //      return res.status(400).send({status:false,msg:"userid must be persent"})
-  //         //     }
-  //         //     filter.userId = userId
-  //         // }
-  //         filter.isDeleted = false
-  //         filter.isPublished = true
-  //         if (subcategory || category ||  userId ) {
-  //             let getDataByFilter = await bookModel.find(filter)
-  //             return res.status(200).send({ status: true, count: getDataByFilter.length, data: getDataByFilter })
-  //         }
-  //         else {
-  //             return res.status(400).send({ status: false, msg: "Filters can be subcategory,category,tags,authorId, title or body only " })
-  //         }
-
-  //       }
-  //     }
-  //   }
-  // catch (err) {
-  //     res.status(500).send({ status: false, error: err.message })
-  // }
-    
-  //     }
-
-
-
-  // const getBookById = async function(req,res){
-  //     try{
-  //          const data= req.param;
-  //          console.log(data)
-  //     }
-  //     catch(err){
-  //        return res.status(500).send({status:false,message:err})
-  //     }
-  // }
 
   module.exports.createBook = createBook
-
-  //module.exports.getUser = getUser
-//module.exports.getBookById = getBookById
+  module.exports.getBook = getBook
+  module.exports.deleteBook=deleteBook

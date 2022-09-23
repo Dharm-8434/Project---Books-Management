@@ -16,8 +16,10 @@ router.post("/login",UserControllers.loginUser)
 router.post("/books",MiddleWare.authentication,BookControllers.createBook)
 
 //---------------------------get(getBook)--------------------------------------//
-//router.get("/books",MiddleWare.authentication,BookControllers.getUser)
+router.get("/books",MiddleWare.authentication,BookControllers.getBook)
 
+//---------------------------DeleteBook---------------------------------------//
+router.delete("/books/:bookId",MiddleWare.authentication,BookControllers.deleteBook)
 
 //--------------------------get by Id----------------------------------------//
 //router.post("/books/bookId",BookControllers.getBookById)
