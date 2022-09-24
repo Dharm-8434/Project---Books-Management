@@ -92,7 +92,10 @@ const loginUser = async function (req, res) {
 
     if (user) {
       let payload = { userId: user._id, email: email };
-      const generatedToken = jwt.sign(payload, "Project3");
+      const generatedToken = jwt.sign({payload,
+        iat:Math.floor(Date.now()/1000),
+        exp:Math.floor(Date.now()/1000)+60*60*60
+      },"Project3");
       return res.status(200).send({status: true,token: generatedToken});
     } 
 

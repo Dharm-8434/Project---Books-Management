@@ -31,9 +31,12 @@ const authentication = async function (req, res, next) {
 
  const authorization = async function (req, res, next) {
   try {
-    let userLoggedIn = req.token.userId;     //successful tokens userid 
+    let userLoggedIn = req.token.userId;    
+    //console.log(userLoggedIn)
+    //successful tokens userid 
     //let bookId = req.params.bookId;
-    let checkBookId = await bookModel.findById(userId)
+    let checkBookId = await bookModel.findOne({userId:userLoggedIn})
+    //console.log(checkBookId)
     if (!checkBookId) {
       return res.status(404).send({status: false, message: "-----Sorry, no book found----->"})
   }

@@ -19,7 +19,7 @@ router.post("/books",MiddleWare.authentication,BookControllers.createBook)
 router.get("/books",MiddleWare.authentication,BookControllers.getBook)
 
 //---------------------------DeleteBook---------------------------------------//
-router.delete("/books/:bookId",MiddleWare.authentication,BookControllers.deleteBook)
+router.delete("/books/:bookId",MiddleWare.authentication,MiddleWare.authorization,BookControllers.deleteBook)
 
 //--------------------------get by Id----------------------------------------//
 //router.post("/books/bookId",BookControllers.getBookById)
