@@ -246,12 +246,12 @@ const updateBook = async (req, res) => {
     }
 
 
-    let fieldsToUpdate = {
-      title: title,
-      excerpt: excerpt,
-      releasedAt: releasedAt,
-      ISBN: ISBN
-    };
+    let fieldsToUpdate = {};
+      fieldsToUpdate.title = title,
+      fieldsToUpdate.excerpt = excerpt,
+      fieldsToUpdate.releasedAt= releasedAt,
+      fieldsToUpdate.ISBN= ISBN
+    ;
 
     let updateBook = await bookModel.findOneAndUpdate(
       { _id: id },

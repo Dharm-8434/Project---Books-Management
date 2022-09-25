@@ -11,11 +11,10 @@ router.post("/login",userController.loginUser)
 
 //Books Apis
 router.post("/books",middleware.authentication,middleware.authorisation,bookController.createBook)
-//router.post("/images",middleware.authentication,bookController.imageUpload)
 router.get("/books",middleware.authentication,bookController.getBooks)
-router.get("/books/:bookId",middleware.authentication,bookController.getBookById)
-//router.put("/books/:bookId",middleware.authentication,middleware.authoriseByQuery,bookController.updateBook)
-//router.delete("/books/:bookId",middleware.authentication,middleware.authoriseByQuery,bookController.deleteById)
+router.get("/books/:bookId",middleware.authentication,middleware.authorisationbyBId,bookController.getBookById)
+router.put("/books/:bookId",middleware.authentication,middleware.authorisation,bookController.updateBook)
+router.delete("/books/:bookId",middleware.authentication,middleware.authorisationbyBId,bookController.deleteById)
 
 //Review Apis
 router.post("/books/:bookId/review",reviewController.createReview)
