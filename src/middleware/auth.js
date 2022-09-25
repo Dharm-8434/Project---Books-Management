@@ -1,93 +1,84 @@
-let jwt = require("jsonwebtoken");
-const usermodel = require("../models/userModel");
-const bookModel = require("../models/bookModel")
-const mongoose = require("mongoose")
 
-// Authentication:->>>====================================================================>>>
+const jwt = require("jsonwebtoken");
+const mongoose = require('mongoose')
+const userModel = require("../models/userModel");
+const bookModel = require("../models/bookModel");
+
+///////////////////////////////////// Authentication ///////////////////////////////////////////////
 
 const authentication = async function (req, res, next) {
-  try {
-    // check token :
-    let token = req.headers["x-api-key"];
-    // if (!token)
-    //  req.headers["x-api-key"];
-    if (!token)
-      return res.status(401).send({ status: false, msg: "-----Token Must be Filled---->" });
-    
-    // verify token :
-    let decodedToken = jwt.verify(token, "Project3");
-    if (!decodedToken)
-      return res.status(400).send({status: false,msg: "Token Not Verified Please Enter Valid Token"});
+    try {
+        // let userId = req.body.userId;
+        // let user = await userModel.findById({ _id: userId })
+        // if (!user) {
+        //     return res.status(404).send({ status: false, msg: "No such user exist" })
+        // }
 
-    req.token = decodedToken;
+        let token = req.headers["x-api-key"]
+        if (!token) token = req.headers["X-API-KEY"]
+        if (!token) {
+            return res.status(400).send({ status: false, msg: "token not found" })
+        }
 
-    next();
-  } catch (err) {
-    res.status(500).send({ status: false, msg: err.message });
-  }
-};
+        let decodedtoken = jwt.verify(token, "Project-3-Group-43")
+        if (!decodedtoken) {
+            return res.status(401).send({ status: false, msg: "invalid token" })
+        }
+        req.userId = decodedtoken.userId;
 
-// Authorization:->>>=======================================================================>>>
 
- const authorization = async function (req, res, next) {
-  try {
-    let userLoggedIn = req.token.userId;    
-    //console.log(userLoggedIn)
-    //successful tokens userid 
-    //let bookId = req.params.bookId;
-    let checkBookId = await bookModel.findOne({userId:userLoggedIn})
-    //console.log(checkBookId)
-    if (!checkBookId) {
-      return res.status(404).send({status: false, message: "-----Sorry, no book found----->"})
-  }
-    if (checkBookId.userId != userLoggedIn) {
-      return res.status(403).send({status: false,msg: "loggedin author not allowed to modify changes"});
+        next()
     }
-    next();
-  } catch (err) {
-    return res.status(500).send({ status: false, msg: err.messge });
-  }
-};
-//================================================================
-const authoriseByQuery = async function (req, res, next) {
-  try {
-      let userLoggedIn = req.token.userId    //Accessing userId from attribute
-
-      let conditions = req.query
-      //Checks if condition for deletion is coming or not
-      if (Object.keys(conditions).length == 0) {
-          return res.status(400).send({status: false,msg: "Provide information for deletion"})
-      }
-      if (conditions.userId) {
-          if (!conditions.userId.match(/^[0-9a-f]{24}$/)) {   //regex for id format check
-              return res.status(400).send({status: false,msg: "Not a valid ObjectId"})
-          }
-
-          if (conditions.userId != userLoggedIn) {
-              return res.status(403).send({status: false,msg: 'user not authorised'})
-          }
-      }
-      let userAccessing = await bookModel.find({ $and: [conditions, { isDeleted: false }] })
-     
-      if (userAccessing.length == 0) {
-          return res.status(404).send({status: false,msg: "No Books Found" })
-      }
-
-      let accessedBook= userAccessing.filter(books => books.userId == userLoggedIn)
-      
-      if (accessedBook.length == 0) {
-          return res.status(403).send({status: false,msg: "User Not Authorised"})
-      }
-      req.id = userLoggedIn //attribute to store the author id from token
-      next()
-  }
-  catch (err) {
-      console.log("this error is from authorisation by query", err.message)
-      res.status(500).send({ msg: err.message })
-  }
+    catch (err) {
+        return res.status(500).send({ status: false, msg: err.message })
+    }
 }
-//============================================================================================
 
-module.exports.authentication = authentication;
-module.exports.authorization = authorization;
-module.exports.authoriseByQuery = authoriseByQuery;
+///////////////////////////////  Authorisation  /////////////////////////////////////
+
+const authorisation = function (req, res, next) {
+
+    try {
+        let token = req.headers["x-api-key"]
+        if(!token)token = req.headers["X-API-KEY"]
+        let decodedtoken = jwt.verify(token, "Project-3-Group-43")
+        let userId = req.body.userId;
+        if (decodedtoken.userId != userId) {
+            return res.status(403).send({ status: false, msg: "you are not authorise" })
+        }
+
+        next()
+    }
+    catch (error) {
+        return res.status(500).send({ status: false, msg: error.message })
+
+    }
+
+}
+
+//======================================================Auhotrisation By Book Id ======================================
+
+const authorisationbyBId = async function(req,res,next){
+    let bookId = req.params.bookId
+    
+    if(!bookId){
+       return res.status(400).send({status: false, message: "Please enter a book ID."});
+    }
+    if(!mongoose.isValidObjectId(bookId)){
+       return res.status(400).send({status: false, message: 'Invalid book id'});
+    }
+
+    let bookData = await bookModel.findById({_id:bookId,isDeleted:false})
+    if(!bookData){
+        return res.status(404).send({status: false, message: 'No Book exists with that id or Might be Deleted'});
+    }
+    
+    if(bookData.userId.toString() !== req.userId){
+    return res.status(403).send({status: false, message: 'Unauthorized access'});
+    }
+    
+    next()
+}
+
+//exporting functions
+module.exports = { authentication, authorisation, authorisationbyBId }

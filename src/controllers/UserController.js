@@ -1,116 +1,131 @@
+const userModel =require("../models/userModel")
+const jwt = require('jsonwebtoken')
 
-const jwt = require("jsonwebtoken")
-const userModel = require("../models/userModel")
+//=========================================== Registering User Here ======================================================
 
-const createUser = async function (req, res) {
-  try {
-    let data = req.body
-    let { title, name, phone, email, password } = data
+const createUser = async function(req,res){
+   
+   try{
+        const data = req.body
+        if(Object.keys(data).length==0){
+            return res.status(400).send({status:false,msg:"Provide Some Data to Create User"})
+        }
+        let{title,name,phone,email,password,address} = data
+        if(!title){
+            return res.status(400).send({status:false,msg:"Please Enter title"})
+        }
+        if (["Mr", "Mrs", "Miss"].indexOf(title) == -1){
+         return res.status(400).send({status: false, data: "Enter a valid title Mr or Mrs or Miss ",});
+        }
+        if(!name){
+            return res.status(400).send({status:false,msg:"Please Enter Name"})
+        }
+        if(!/^[a-zA-Z \s]+$/.test(name)){
+            return res.status(400).send({status:false,msg:"Please Enter Only Alphabets in Name"})
+        }
+        if(!phone){
+            return res.status(400).send({status:false,msg:"Please Enter Phone"})
+        }
+        if(!/^[6-9]\d{9}$/.test(phone)){
+            return res.status(400).send({status:false,msg:"Please Enter Valid Phone Number"})
+        }
+        let phoneCheck = await userModel.findOne({ phone:phone });
+        if (phoneCheck){
+        return res.status(400).send({ status: false, msg: "User With This Phone already Registerd" });
+        }
+        if(!email){
+            return res.status(400).send({status:false,msg:"Please Enter email"})
+        }
+        if(!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+            return res.status(400).send({status:false,msg:"Please Enter Valid Email Id"})
+        }
 
-    if (Object.keys(data).length == 0) {
-      return res.status(400)
-      .send({ status: false, message: "please enter data in the request body" })
-    }
+        let emailCheck = await userModel.findOne({ email:email });
+        if (emailCheck){
+        return res.status(400).send({ status: false, msg: "Email-Id already Registerd" });
+        }
+        if(!password){
+            return res.status(400).send({status:false,msg:"Please Enter password"})
+        }
+        if(!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(password)){
+            return res.status(400).send({status:false,msg:"Password Should Contain at Least One Capital Letter and One Special Char and a number and length btwn 8-15"})
+        }
+        if(!address){
+            return res.status(400).send({status:false,msg:"Please Enter address"})
+        }
+        if(address){
+            if(!(address.street.trim())){
+                return res.status(400).send({status:false,msg:"Please Enter street in Address"})
+            }
+            
+            if(!(address.city.trim())){
+                return res.status(400).send({status:false,msg:"Please Enter City in Address"})
+            }
+            if(!isNaN(address.city)){
+                return res.status(400).send({status:false,msg:"Please donot Enter City in Address as Number"})
 
-    data.title = data.title.trim()
-    if (!title) {
-      return res.status(400)
-        .send({ status: false, message: "title is missing" })
-    }
+            }
+            if(!(address.pincode.trim())){
+                return res.status(400).send({status:false,msg:"Please Enter PinCode in Address"})
+            }
+            if(isNaN(address.pincode)){
+                return res.status(400).send({status:false,msg:"Please  Enter PinCode in Address as Number"})
 
-    if (!name) {
-      return res.status(400)
-        .send({ status: false, message: "name is missing" })
-    }
-    data.name = data.name.trim()
-    if (name.length !== 0) {
-      if (!/^[a-zA-Z_ ]+$/.test(name)) {
-        return res.status(400)
-          .send({ status: false, message: "Enter valid name " })
-      }
-    }
+            }
+        }
 
-    if (!phone) {
-      return res.status(400)
-        .send({ status: false, message: "phone number is missing" })
-    }
-    data.phone = data.phone.trim()
-    if (! /^[6-9]\d{9}$/.test(phone)) {
-      return res.status(400)
-        .send({ status: false, message: "phone number is not valid" })
-    }
+        name = name.replace(/\s\s+/g, ' ')
+        data['name'] = name
+        const user = await userModel.create(data)
 
-    const duplicatePhone = await userModel.findOne({ phone: data.phone });
-    if (duplicatePhone) {
-      return res.status(400)
-        .send({ status: false, msg: "phone is all ready exist" })
+        return res.status(201).send({status:true,msg:"User Is Created Succefully",data:user})
     }
-    const duplicateEmail = await userModel.findOne({ email: data.email });
-    if (duplicateEmail) {
-      return res.status(400)
-        .send({ status: false, msg: "email is all ready exist" });
+    catch(err){
+        return res.status(500).send({status:false,msg:err.message})
     }
-
-    if (!email) {
-      return res.status(400)
-        .send({ status: false, message: "email is missing" })
-    }
-    data.email = data.email.trim()
-    if (!(/^[a-z0-9_]{3,}@[a-z]{3,}[.]{1}[a-z]{3,6}$/).test(data.email)) {
-      return res.status(400)
-        .send({ status: false, message: "Enter a valid emailId" })
-    }
-
-    if (!password) {
-      return res.status(400)
-        .send({ status: false, message: "password is missing" })
-    }
-    if (!(/^[a-zA-Z0-9!@#$%^&*]{6,16}$/).test(password)) {
-      return res.status(400)
-        .send({ status: false, message: "Enter a valid password" });
-    }
-
-    let savedData = await userModel.create(data)
-    return res.status(201)
-      .send({ status: true, message: " you are registered successfully", data: savedData })
-
-  } catch (err) {
-    return res.status(500).send({ status: false, message: err.message })
-  }
 }
 
+//============================================ Login Api =====================================================
 
-//===================================loginUser==============================================================//
+const loginUser = async function(req,res){
+    try{
 
+        const data = req.body
+        const email=data.email;
+       email.toLowerCase();
+        let password = data.password;
+        //const {email,password} = data
+        if(Object.keys(data).length==0){
+            return res.status(400).send({status:false,msg:"Please Enter email and Password"})
 
+        }
+        if(!email){
+            return res.status(400).send({status:false,msg:"Please Enter email"})
+        }
+        if(!password){
+            return res.status(400).send({status:false,msg:"Please Enter password"})
+        }
+        const user =  await userModel.findOne({email:email,password:password})
+        if(!user){
+            return res.status(401).send({status:false,msg:"Invalid User"})
 
-const loginUser = async function (req, res) {
-  try {
+        }
 
-    let { email, password } = req.body;
-    let user = await userModel.findOne({ email, password });
+// Creating Token Here
 
-    if (user) {
-      let payload = { userId: user._id, email: email };
-      const generatedToken = jwt.sign({payload,
-        iat:Math.floor(Date.now()/1000),
-        exp:Math.floor(Date.now()/1000)+60*60*60
-      },"Project3");
-      return res.status(200).send({status: true,token: generatedToken});
-    } 
+        const token = jwt.sign({
+            userId:user._id.toString(),
+          expiresIn: "30d",
+          iat: Math.floor(Date.now() / 1000),
+        },
+             "Project-3-Group-43"
+            )
+        res.setHeader("x-api-key",token)
+        return res.status(201).send({status:true,msg:"User LoggedIn Succesfully",token:token})
 
-    if (!email) {
-      return res.status(400)
-        .send({ status: false, message: "email is required" })
     }
-    if(!password){
-      return res.status(400)
-      .send({ status:false,message:"Password is required" })
+    catch(err){
+        return res.status(500).send({status:false,msg:err.message})
     }
-  } catch (error) {
-    res.status(500).send({ status: false, msg: error.message });
-  }
-};
-
-module.exports.createUser = createUser
-module.exports.loginUser = loginUser
+}
+module.exports = {createUser,loginUser}

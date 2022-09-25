@@ -1,55 +1,55 @@
-const mongoose = require('mongoose');
-//const userModel = require('./userModel');
-const ObjectId = mongoose.Schema.Types.ObjectId;
-const moment = require('moment')
+const { default: mongoose } = require('mongoose')
+const ObjectId = mongoose.Schema.Types.ObjectId
 
-const BookSchema = new mongoose.Schema({
+
+const bookSchema = mongoose.Schema({
+
     title: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
-        trim: true
+        trim:true
     },
     excerpt: {
         type: String,
-        require: true,
-        trim: true
+        required: true,
+        trim:true
     },
     userId: {
         type: ObjectId,
-        require: true,
-        ref: 'userdata'
+        required: true,
+        ref: "User"
     },
-
     ISBN: {
         type: String,
-        require: true,
-        unique: true,
-        trim: true
+        required: true,
+        unique: true
     },
     category: {
         type: String,
-        require: true
+        required: true,
+        trim:true
     },
-    subcategory: {
+    subcategory: [{
         type: String,
-        require: true,
-        trim: true
-    },
+        required: true,
+        trim:true
+    }],
     reviews: {
         type: Number,
         default: 0
     },
-    deletedAt: { type: Date },
-    releasedAt: { type: String, required: true },
+    deletedAt: {
+        type: Date
+    },
     isDeleted: {
         type: Boolean,
         default: false
     },
-}, { timestamps: true});
+    releasedAt: {
+        type: Date,
+        required: true
+    }
+},{ timestapms: true })
 
-
-module.exports = mongoose.model('book', BookSchema)
-
-
-
+module.exports =mongoose.model("Book",bookSchema)

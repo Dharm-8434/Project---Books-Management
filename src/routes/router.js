@@ -1,32 +1,31 @@
-const express = require('express');
- const UserControllers = require('../controllers/UserController')
- const BookControllers = require('../controllers/bookController')
- const MiddleWare = require('../middleware/auth');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
+const userController = require("../controllers/userController")
+const bookController = require("../controllers/bookController")
+const reviewController  = require("../controllers/reviewController")
+const middleware = require("../middleware/auth")
+
+//User Apis
+router.post("/register",userController.createUser)
+router.post("/login",userController.loginUser)
+
+//Books Apis
+router.post("/books",middleware.authentication,middleware.authorisation,bookController.createBook)
+//router.post("/images",middleware.authentication,bookController.imageUpload)
+router.get("/books",middleware.authentication,bookController.getBooks)
+router.get("/books/:bookId",middleware.authentication,bookController.getBookById)
+//router.put("/books/:bookId",middleware.authentication,middleware.authoriseByQuery,bookController.updateBook)
+//router.delete("/books/:bookId",middleware.authentication,middleware.authoriseByQuery,bookController.deleteById)
+
+//Review Apis
+router.post("/books/:bookId/review",reviewController.createReview)
+router.put("/books/:bookId/review/:reviewId",reviewController.updateReview)
+router.delete("/books/:bookId/review/:reviewId",reviewController.deleteReview)
 
 
-
-//---------------------------Post(createUser)----------------------------------//
-router.post("/register",UserControllers.createUser)
-
-//---------------------------Post(loginUser)----------------------------------//
-router.post("/login",UserControllers.loginUser)
-
-//---------------------------Post(createBook)----------------------------------//
-router.post("/books",MiddleWare.authentication,BookControllers.createBook)
-
-//---------------------------get(getBook)--------------------------------------//
-router.get("/books",MiddleWare.authentication,BookControllers.getBook)
-
-//---------------------------DeleteBook---------------------------------------//
-router.delete("/books/:bookId",MiddleWare.authentication,MiddleWare.authorization,BookControllers.deleteBook)
-
-//--------------------------get by Id----------------------------------------//
-//router.post("/books/bookId",BookControllers.getBookById)
-//----------------------------THIS is wrong route handler---------------------//
-router.all("/*", function (req, res) {
-    res.status(400).send({ status: false, message: "Invalid path params" });
-  });
+router.all("/****",function(req,res){
+    res.status(404).send({status:false, msg:"API Url is wrong , correct it"})
+} )
+module.exports = router
 
 
-module.exports = router;
