@@ -3,6 +3,9 @@ const bookModel = require("../models/bookModel")
 const userModel = require("../models/userModel")
 const reviewModel = require("../models/reviewModel");
 const moment = require('moment')
+const isValOdObjectId = (objectId) => {
+  return mongoose.Types.ObjectId.isValid(objectId);
+};
 //const aws = require('aws-sdk')
 
 //=================================================AWS COnfig ===============================================================
@@ -190,17 +193,23 @@ const getBookById = async (req, res) => {
   try {
     let id = req.params.bookId;
    
+  if (!(id))
+  return res.status(400).send({ status: false, message: "-----Book id is not valid, Please try again----->" })
 
     let bookData = await bookModel.findOne({ _id: id, isDeleted: false }).select({ __v: 0 })
-    let reviews = await reviewModel.find({ bookId: id, isDeleted: false }).select({ _id: 0, __v: 0 })
-    let result = bookData.toObject()
-    result.reviewsData = reviews;
+    //let reviews = await reviewModel.find({ bookId: id, isDeleted: false }).select({ _id: 0, __v: 0 })
+    //let result = bookData.toObject()
+    //result.reviewsData = reviews;
+  if (bookData.length == 0)
+  return res.status(404).send({ status: false, msg: "---no documents found---->" })
 
-    res.send({ status: true, message: 'Book list', data:result});
+    res.send({ status: true, message: 'Book list', data:bookData});
   } catch (err) {
     res.status(500).send({ status: false, message: err.message });
-  }
+ }
 }
+
+
 
 //===================================================== Update Books =====================================================
 
