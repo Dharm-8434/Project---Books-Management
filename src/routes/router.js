@@ -23,7 +23,7 @@ router.delete("/books/:bookId/review/:reviewId",reviewController.deleteReview)
 
 
 router.all("/****",function(req,res){
-    res.status(404).send({status:false, msg:"API Url is wrong , correct it"})
+    res.status(400).send({status:false, msg:"API Url is wrong , correct it"})
 } )
 module.exports = router
 
